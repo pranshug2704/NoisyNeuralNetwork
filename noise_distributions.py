@@ -132,7 +132,7 @@ def inject_thermal_noise(
     in_place: bool = True
 ) -> nn.Module:
     """
-    Inject noise into all Linear layer weights of a model.
+    Inject noise into all Linear and Conv1D layer weights of a model.
 
     Simulates thermal drift in analog hardware by adding noise:
         W_noisy = W + noise(0, σ²)
@@ -148,6 +148,14 @@ def inject_thermal_noise(
     Returns:
         Model with noisy weights (same instance if in_place=True, copy otherwise)
     """
+    # Import Conv1D for GPT-2 style models
+    try:
+        from transformers.pytorch_utils import Conv1D
+        has_conv1d = True
+    except ImportError:
+        has_conv1d = False
+        Conv1D = None
+
     if not in_place:
         model = copy.deepcopy(model)
 
@@ -158,7 +166,12 @@ def inject_thermal_noise(
 
     with torch.no_grad():
         for name, module in model.named_modules():
-            if isinstance(module, nn.Linear):
+            # Check for nn.Linear
+            is_linear = isinstance(module, nn.Linear)
+            # Check for HuggingFace Conv1D (used by GPT-2)
+            is_conv1d = has_conv1d and isinstance(module, Conv1D)
+
+            if is_linear or is_conv1d:
                 # Add noise to weights
                 noise = noise_dist.sample(
                     module.weight.shape,

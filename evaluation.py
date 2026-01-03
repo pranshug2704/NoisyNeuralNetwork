@@ -200,3 +200,104 @@ def compute_output_entropy(
             input_ids = torch.cat([input_ids, next_token], dim=-1)
 
     return sum(entropies) / len(entropies) if entropies else 0.0
+
+
+# =============================================================================
+# Diversity Metrics for Optimal Jitter Analysis
+# =============================================================================
+
+def get_ngrams(text: str, n: int) -> List[tuple]:
+    """
+    Extract n-grams from text.
+
+    Args:
+        text: Input text
+        n: Size of n-grams
+
+    Returns:
+        List of n-gram tuples
+    """
+    words = text.lower().split()
+    return [tuple(words[i:i+n]) for i in range(len(words) - n + 1)]
+
+
+def compute_distinct_n(texts: List[str], n: int = 2) -> float:
+    """
+    Compute Distinct-n metric: ratio of unique n-grams to total n-grams.
+
+    Higher values indicate more diverse/creative output.
+    Used to find the "Goldilocks zone" where noise increases creativity
+    without causing repetition/gibberish.
+
+    Args:
+        texts: List of generated text samples
+        n: Size of n-grams (typically 1, 2, or 3)
+
+    Returns:
+        Distinct-n score (0 to 1, higher is more diverse)
+    """
+    all_ngrams = []
+    for text in texts:
+        all_ngrams.extend(get_ngrams(text, n))
+
+    if not all_ngrams:
+        return 0.0
+
+    unique_ngrams = set(all_ngrams)
+    return len(unique_ngrams) / len(all_ngrams)
+
+
+def compute_repetition_ratio(texts: List[str], n: int = 3) -> float:
+    """
+    Compute repetition ratio: how often n-grams are repeated.
+
+    Higher values indicate more repetitive (degraded) output.
+
+    Args:
+        texts: List of generated text samples
+        n: Size of n-grams to check for repetition
+
+    Returns:
+        Repetition ratio (0 to 1, lower is better)
+    """
+    all_ngrams = []
+    for text in texts:
+        all_ngrams.extend(get_ngrams(text, n))
+
+    if not all_ngrams:
+        return 0.0
+
+    unique_count = len(set(all_ngrams))
+    total_count = len(all_ngrams)
+
+    # Repetition = 1 - (unique / total)
+    return 1.0 - (unique_count / total_count)
+
+
+def compute_vocabulary_richness(texts: List[str]) -> dict:
+    """
+    Compute multiple vocabulary richness metrics.
+
+    Args:
+        texts: List of generated text samples
+
+    Returns:
+        Dictionary with type-token ratio, unique words count, etc.
+    """
+    all_words = []
+    for text in texts:
+        all_words.extend(text.lower().split())
+
+    if not all_words:
+        return {"type_token_ratio": 0.0, "unique_words": 0, "total_words": 0}
+
+    unique_words = set(all_words)
+
+    return {
+        "type_token_ratio": len(unique_words) / len(all_words),
+        "unique_words": len(unique_words),
+        "total_words": len(all_words),
+        "distinct_1": compute_distinct_n(texts, 1),
+        "distinct_2": compute_distinct_n(texts, 2),
+        "distinct_3": compute_distinct_n(texts, 3)
+    }

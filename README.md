@@ -111,14 +111,68 @@ NoisyNeuralNetwork/
 ├── thermal_noise_simulation.py  # Main CLI script
 ├── noise_distributions.py       # Modular noise injection system
 ├── evaluation.py                # Perplexity & entropy utilities
+├── layer_sensitivity.py         # Experiment A: Attention vs MLP
+├── optimal_jitter.py            # Experiment B: Goldilocks zone
+├── noise_aware_training.py      # Experiment C: QAT-style training
+├── generate_graphs.py           # Comparison graph generation
 ├── requirements.txt             # Dependencies
 ├── images/                      # Generated visualizations
-│   ├── noise_vs_perplexity_gaussian.png
-│   ├── noise_vs_perplexity_uniform.png
-│   ├── noise_vs_perplexity_cauchy.png
-│   └── noise_comparison.png
 └── README.md
 ```
+
+---
+
+## 🔬 Advanced Experiments
+
+### A. Layer Sensitivity Analysis
+
+**Question**: Are Attention layers or MLP layers more tolerant to noise?
+
+```bash
+python layer_sensitivity.py --max_noise 0.04 --n_levels 8
+```
+
+**Key Finding**: MLP layers are slightly MORE noise-tolerant than Attention layers:
+
+- Attention crosses PPL=100 at σ ≈ 0.034
+- MLP crosses PPL=100 at σ ≈ 0.040
+
+<p align="center">
+  <img src="images/layer_sensitivity.png" alt="Layer Sensitivity" width="100%">
+</p>
+
+**Implication**: For hybrid analog/digital chips, consider **Digital Attention + Analog MLP**.
+
+---
+
+### B. Optimal Jitter Search (Goldilocks Zone)
+
+**Question**: Is there a noise level where the model becomes MORE creative without breaking?
+
+```bash
+python optimal_jitter.py --search_range 0.001 0.025 --n_points 12
+```
+
+**Key Finding**: Goldilocks zone exists at **σ = 0.001**:
+
+- Diversity (Distinct-2): +7.8% improvement
+- Perplexity: only +2.8% degradation
+
+<p align="center">
+  <img src="images/goldilocks_zone.png" alt="Goldilocks Zone" width="100%">
+</p>
+
+---
+
+### C. Noise-Aware Fine-tuning
+
+**Question**: Can we train the model to be robust to noise (like Quantization-Aware Training)?
+
+```bash
+python noise_aware_training.py --noise_level 0.01 --epochs 1 --max_samples 500
+```
+
+This module injects noise during the forward pass, teaching the model to store information redundantly.
 
 ### Module Details
 
@@ -249,8 +303,9 @@ MIT License - feel free to use this for research or educational purposes!
 
 Contributions welcome! Ideas for extensions:
 
-- [ ] Add more noise distributions (Poisson, Student-t)
+- [ ] Add more noise distributions (Poisson, Student-t, Laplacian)
 - [ ] Support for larger models (LLaMA, Mistral)
-- [ ] Layer-specific noise injection
-- [ ] Noise-aware fine-tuning experiments
+- [x] ~~Layer-specific noise injection~~ (Implemented: `layer_sensitivity.py`)
+- [x] ~~Noise-aware fine-tuning experiments~~ (Implemented: `noise_aware_training.py`)
 - [ ] Web UI for interactive exploration
+- [ ] Per-layer noise scheduling (noise annealing)
