@@ -174,6 +174,47 @@ python noise_aware_training.py --noise_level 0.01 --epochs 1 --max_samples 500
 
 This module injects noise during the forward pass, teaching the model to store information redundantly.
 
+---
+
+### D. Temporal Noise (Weight Drift)
+
+**Question**: Does the model degrade gracefully (like a tired human) or suddenly snap?
+
+```bash
+python temporal_drift.py --total_tokens 100 --end_sigma 0.02
+```
+
+**Key Finding**: **GRADUAL degradation** - the model behaves like a tired human, not a sudden cliff!
+
+<p align="center">
+  <img src="images/temporal_drift.png" alt="Temporal Drift" width="100%">
+</p>
+
+Supports multiple drift schedules: `linear`, `exponential`, `step`, `sine` (thermal cycling).
+
+---
+
+### E. Architecture Scaling (GPT-2 vs LLaMA-3)
+
+**Question**: Are larger/modern models more or less noise-tolerant?
+
+```bash
+# GPT-2 comparison only (no GPU required)
+python llama_scaling.py --n_levels 8 --max_noise 0.03
+
+# Include LLaMA-3/Mistral (requires CUDA GPU)
+python llama_scaling.py --include_modern
+```
+
+**Key Finding**: **Smaller models are MORE noise-tolerant!**
+
+- GPT-2 (82M): 2x PPL at σ = 0.0129
+- GPT-2 Medium (355M): 2x PPL at σ = 0.0086
+
+<p align="center">
+  <img src="images/llama_scaling.png" alt="Architecture Scaling" width="100%">
+</p>
+
 ### Module Details
 
 #### `noise_distributions.py`
