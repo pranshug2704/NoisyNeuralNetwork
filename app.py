@@ -179,7 +179,7 @@ def calculate_energy_savings(
 
 
 def create_probability_chart(probs: List[Tuple[str, float]], title: str = "Token Probabilities"):
-    """Create a bar chart of top token probabilities and return as image path."""
+    """Create a bar chart of top token probabilities."""
     fig, ax = plt.subplots(figsize=(5, 2.5))
 
     if not probs:
@@ -205,17 +205,11 @@ def create_probability_chart(probs: List[Tuple[str, float]], title: str = "Token
 
     ax.set_title(title, fontsize=10, fontweight='bold')
     plt.tight_layout()
-
-    # Save to temp file for Gradio Image component
-    import tempfile
-    tmp = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
-    plt.savefig(tmp.name, dpi=100, bbox_inches='tight')
-    plt.close(fig)
-    return tmp.name
+    return fig
 
 
 def create_entropy_chart(entropies: List[float], sigmas: List[float]):
-    """Create entropy over time chart for thermal drift and return as image path."""
+    """Create entropy over time chart for thermal drift."""
     fig, ax = plt.subplots(figsize=(5, 2.5))
 
     if not entropies:
@@ -229,8 +223,8 @@ def create_entropy_chart(entropies: List[float], sigmas: List[float]):
         ax.fill_between(steps, entropies, alpha=0.3)
 
         ax2 = ax.twinx()
-        ax2.plot(steps, sigmas, 'r--', linewidth=1, alpha=0.7, label='σ')
-        ax2.set_ylabel('σ', color='red', fontsize=9)
+        ax2.plot(steps, sigmas, 'r--', linewidth=1, alpha=0.7, label='sigma')
+        ax2.set_ylabel('sigma', color='red', fontsize=9)
         ax2.tick_params(axis='y', labelcolor='red')
 
         ax.set_xlabel('Token Position', fontsize=9)
@@ -239,13 +233,7 @@ def create_entropy_chart(entropies: List[float], sigmas: List[float]):
         ax.legend(loc='upper left', fontsize=8)
 
     plt.tight_layout()
-
-    # Save to temp file for Gradio Image component
-    import tempfile
-    tmp = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
-    plt.savefig(tmp.name, dpi=100, bbox_inches='tight')
-    plt.close(fig)
-    return tmp.name
+    return fig
 
 
 def generate_with_features(
@@ -257,7 +245,7 @@ def generate_with_features(
     thermal_drift: bool,
     max_tokens: int,
     temperature: float
-) -> Tuple[str, str, str, str, str, str, str]:
+) -> Tuple[str, str, str, str, str, plt.Figure, plt.Figure]:
     """Generate text with all advanced features."""
     global EXPERIMENT_LOG
 
@@ -537,8 +525,8 @@ def create_demo():
                         )
 
                 with gr.Row():
-                    prob_chart = gr.Image(label="Token Probabilities")
-                    entropy_chart = gr.Image(label="Entropy Over Time")
+                    prob_chart = gr.Plot(label="Token Probabilities")
+                    entropy_chart = gr.Plot(label="Entropy Over Time")
 
         with gr.Accordion("📖 About the Physics", open=False):
             gr.Markdown("""
