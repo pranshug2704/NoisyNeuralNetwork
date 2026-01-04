@@ -6,6 +6,9 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-ee4c2c.svg)](https://pytorch.org/)
 [![Hugging Face](https://img.shields.io/badge/🤗-Transformers-yellow.svg)](https://huggingface.co/transformers/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Spaces](https://img.shields.io/badge/🤗-Live%20Demo-orange.svg)](https://huggingface.co/spaces/pranshug2704/noisy-neural-network)
+
+### 🚀 [Try the Live Demo →](https://huggingface.co/spaces/pranshug2704/noisy-neural-network)
 
 ---
 
