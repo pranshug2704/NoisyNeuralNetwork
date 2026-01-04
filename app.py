@@ -243,6 +243,7 @@ def generate_with_features(
     apply_attention: bool,
     apply_mlp: bool,
     thermal_drift: bool,
+    drift_rate: float,
     max_tokens: int,
     temperature: float
 ) -> Tuple[str, str, str, str, str, plt.Figure, plt.Figure]:
@@ -287,7 +288,7 @@ def generate_with_features(
         for step in range(max_tokens):
             # Apply thermal drift
             if thermal_drift and step > 0:
-                current_sigma = min(noise_level + step * 0.001, 0.05)
+                current_sigma = min(noise_level + step * drift_rate, 0.05)
 
             sigmas.append(current_sigma)
 
@@ -480,8 +481,14 @@ def create_demo():
                     apply_mlp = gr.Checkbox(label="MLP", value=True)
 
                 thermal_drift = gr.Checkbox(
-                    label="🔥 Thermal Runaway (σ +0.001/token)",
-                    value=False
+                    label="🔥 Thermal Runaway",
+                    value=False,
+                    info="Simulate chip overheating over time"
+                )
+                drift_rate = gr.Slider(
+                    minimum=0.0001, maximum=0.005, value=0.001, step=0.0001,
+                    label="Thermal Drift Rate (σ/token)",
+                    info="How fast the chip heats up"
                 )
 
                 with gr.Row():
@@ -544,7 +551,7 @@ def create_demo():
         generate_btn.click(
             fn=generate_with_features,
             inputs=[prompt, noise_slider, noise_type, apply_attention,
-                   apply_mlp, thermal_drift, max_tokens, temperature],
+                   apply_mlp, thermal_drift, drift_rate, max_tokens, temperature],
             outputs=[baseline_output, noisy_output, quality, heat_bar,
                     energy_display, prob_chart, entropy_chart]
         )
