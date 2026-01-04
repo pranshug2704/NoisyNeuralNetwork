@@ -509,9 +509,6 @@ def create_demo():
                     elem_classes=["energy-display"]
                 )
 
-                export_btn = gr.Button("📊 Download Experiment CSV")
-                export_file = gr.File(label="Experiment Log")
-
             # RIGHT COLUMN: Outputs
             with gr.Column(scale=2):
                 heat_bar = gr.Textbox(
@@ -564,7 +561,7 @@ def create_demo():
                     energy_display, prob_chart, entropy_chart]
         )
 
-        export_btn.click(fn=export_experiment_log, outputs=[export_file])
+
 
         def update_energy(sigma, noise_type, attn, mlp):
             _, status = calculate_energy_savings(sigma, noise_type, attn, mlp)
