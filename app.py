@@ -229,17 +229,38 @@ def create_demo():
 
         gr.Markdown("""
         ---
-        ### 🔬 What's Happening?
+        ### 📖 Controls Guide
 
-        | Noise Level | Effect | Analogy |
-        |-------------|--------|---------|
+        | Control | What It Does | Recommended Values |
+        |---------|--------------|-------------------|
+        | **🌡️ Voltage/Heat (σ)** | Simulates thermal noise magnitude. Higher = more weight perturbation. | 0-0.005 for coherent, 0.01-0.02 for creative, >0.03 for breakdown |
+        | **Noise Distribution** | Type of random noise injected into weights | **Gaussian**: thermal noise (most realistic). **Uniform**: quantization errors. **Cauchy**: extreme outliers |
+        | **Max Tokens** | How many words/tokens to generate | 50 is good for demos, increase for longer text |
+        | **Temperature** | Controls randomness in token selection (separate from noise) | 0.8 is balanced, lower = deterministic, higher = creative |
+
+        ---
+        ### 🔬 The Science
+
+        This demo injects noise directly into the neural network **weights** using:
+
+        $$W_{noisy} = W_{original} + \\mathcal{N}(0, \\sigma^2)$$
+
+        Where σ (sigma) represents the "Thermal Temperature" of analog hardware.
+
+        | Noise Level | Effect | Hardware Analogy |
+        |-------------|--------|------------------|
         | σ = 0.000 | Perfect output | Cool silicon |
-        | σ = 0.005 | Slight creativity boost | Warm processor |
-        | σ = 0.010 | Repetitive patterns | Hot chip |
+        | σ = 0.001 | **Goldilocks Zone** - slightly MORE creative! | Warm processor |
+        | σ = 0.010 | Repetitive patterns emerge | Hot chip |
         | σ = 0.020 | Major degradation | Overheating |
-        | σ = 0.050 | Complete gibberish | Thermal runaway |
+        | σ = 0.050 | Complete gibberish | Thermal runaway 🔥 |
 
-        **Try the "Goldilocks Zone"**: Around σ = 0.001, the model becomes slightly MORE creative!
+        ---
+        ### 🔗 Links
+
+        **GitHub**: [pranshug2704/NoisyNeuralNetwork](https://github.com/pranshug2704/NoisyNeuralNetwork)
+
+        Built with 🧠 by exploring how analog AI chips handle noise.
         """)
 
         # Event handlers
