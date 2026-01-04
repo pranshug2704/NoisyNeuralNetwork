@@ -1,0 +1,12 @@
+timestamp,prompt,sigma,noise_type,apply_attention,apply_mlp,thermal_drift,avg_entropy,quality,baseline_text,noisy_text
+2026-01-03T17:02:16.119873,The future of artificial intelligence is,0,quantize_4bit,True,True,False,4.829,🔢 QUANTIZED,The future of artificial intelligence is yet to come. It can be called artificial intelligence. We c,The future of artificial intelligence is M Carter Hell Powder Crystal Powder Powder Powder Powder M 
+2026-01-03T17:02:49.415062,The future of artificial intelligence is,0.01,gaussian,True,True,True,3.827,💀 GIBBERISH,"The future of artificial intelligence is not an easy one. However, it is very possible to use the sa","The future of artificial intelligence is a matter of time.
+
+
+
+
+
+
+
+
+A wonderful and incredible watch,"
